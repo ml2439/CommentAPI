@@ -40,6 +40,9 @@ namespace CommentAPI
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
 
+            // Without this line, 404 message only appears in DeveloperTool-Console
+            app.UseStatusCodePages();
+
             app.UseMvc();
         }
     }

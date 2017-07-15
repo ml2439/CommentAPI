@@ -8,15 +8,21 @@ namespace CommentAPI.Controllers
     public class CommentController : Controller
     {
         [HttpGet]
-        public JsonResult GetComments()
+        public IActionResult GetComments()
         {
-            return new JsonResult(CommentDataStore.Current.Comments);
+            return Ok(CommentDataStore.Current.Comments);
         }
 
         [HttpGet("{id}")]
-        public JsonResult GetComment(int id)
+        public IActionResult GetComment(int id)
         {
-            return new JsonResult(CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == id));
+            var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == id);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(comment);
         }
     }
 }
