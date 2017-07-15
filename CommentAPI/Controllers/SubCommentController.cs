@@ -74,5 +74,39 @@ namespace CommentAPI.Controllers
                 new { commentId = commentId, subCommentId = finalSubComment.Id },
                 finalSubComment);
         }
+
+        [HttpPut("{commentId}/subcomment/{subCommentId}")]
+        public IActionResult UpdateSubComment(int commentId, int subCommentId, 
+            [FromBody] SubCommentForUpdateDto subComment)
+        {
+            // check user input (request body)
+            if (subComment == null)
+            {
+                return BadRequest();
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // check uri to make sure commentId exist (resource uri)
+            var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            var subCommentFromStore = comment.SubComments.FirstOrDefault(sbfs => sbfs.Id == subCommentId);
+            if (subCommentFromStore == null)
+            {
+                return NotFound();
+            }
+
+            subCommentFromStore.Content = subComment.Content;
+
+            return NoContent();
+        }
+
     }
 }
