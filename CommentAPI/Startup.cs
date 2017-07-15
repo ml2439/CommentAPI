@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Serialization;
 
 namespace CommentAPI
 {
@@ -28,7 +29,16 @@ namespace CommentAPI
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc()
+                // If want to manipulate JSON serializer settings, do it here (optional)
+                .AddJsonOptions(o =>
+                {
+                    if (o.SerializerSettings.ContractResolver != null)
+                    {
+                        var castedResolver = o.SerializerSettings.ContractResolver as DefaultContractResolver;
+                        castedResolver.NamingStrategy = null;
+                    }
+                });
 
             // Add application services.
 
