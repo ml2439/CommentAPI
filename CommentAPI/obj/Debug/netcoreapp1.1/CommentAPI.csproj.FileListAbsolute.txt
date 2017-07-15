@@ -1,9 +1,0 @@
-D:\Programs\CommentAPI\CommentAPI\bin\Debug\netcoreapp1.1\CommentAPI.deps.json
-D:\Programs\CommentAPI\CommentAPI\bin\Debug\netcoreapp1.1\CommentAPI.runtimeconfig.json
-D:\Programs\CommentAPI\CommentAPI\bin\Debug\netcoreapp1.1\CommentAPI.runtimeconfig.dev.json
-D:\Programs\CommentAPI\CommentAPI\bin\Debug\netcoreapp1.1\CommentAPI.dll
-D:\Programs\CommentAPI\CommentAPI\bin\Debug\netcoreapp1.1\CommentAPI.pdb
-D:\Programs\CommentAPI\CommentAPI\obj\Debug\netcoreapp1.1\CommentAPI.csprojResolveAssemblyReference.cache
-D:\Programs\CommentAPI\CommentAPI\obj\Debug\netcoreapp1.1\CommentAPI.AssemblyInfo.cs
-D:\Programs\CommentAPI\CommentAPI\obj\Debug\netcoreapp1.1\CommentAPI.dll
-D:\Programs\CommentAPI\CommentAPI\obj\Debug\netcoreapp1.1\CommentAPI.pdb
