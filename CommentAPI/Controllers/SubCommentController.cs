@@ -47,6 +47,11 @@ namespace CommentAPI.Controllers
                 return BadRequest();
             }
 
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             // check uri to make sure commentId exist (resource uri)
             var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
             if (comment == null)
