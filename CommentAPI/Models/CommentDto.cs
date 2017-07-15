@@ -9,6 +9,13 @@ namespace CommentAPI.Models
     {
         public int Id { get; set; }
         public string Content { get; set; }
-        public int NumberOfLikes { get; set; }
+        public int NumberOfSubComments
+        {
+            get
+            {
+                return SubComments.Count;
+            }
+        }
+        public ICollection<SubCommentDto> SubComments { get; set; } = new List<SubCommentDto>();
     }
 }
