@@ -73,7 +73,7 @@ namespace CommentAPI.Controllers
         }
 
         [HttpPost("{commentId}/subcomment")]
-        public IActionResult CreateSubComment(int commentId, 
+        public IActionResult CreateSubComment(int commentId,
             [FromBody] SubCommentForCreationDto subComment)
         {
             // check user input (request body)
@@ -124,20 +124,23 @@ namespace CommentAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            // check uri to make sure commentId exist (resource uri)
-            var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
-            if (comment == null)
+            if (!_commentInfoRepository.CommentExists(commentId))
             {
                 return NotFound();
             }
 
-            var subCommentFromStore = comment.SubComments.FirstOrDefault(sbfs => sbfs.Id == subCommentId);
-            if (subCommentFromStore == null)
+            var subCommentEntity = _commentInfoRepository.GetSubCommentForComment(commentId, subCommentId);
+            if (subCommentEntity == null)
             {
                 return NotFound();
             }
 
-            subCommentFromStore.Content = subComment.Content;
+            Mapper.Map(subComment, subCommentEntity);
+
+            if (!_commentInfoRepository.Save())
+            {
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
 
             return NoContent();
         }
