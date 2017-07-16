@@ -1,4 +1,5 @@
 ﻿using CommentAPI.Models;
+using CommentAPI.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -14,9 +15,11 @@ namespace CommentAPI.Controllers
     {
         // Constructor injection
         private ILogger<SubCommentController> _logger;
-        public SubCommentController(ILogger<SubCommentController> logger)
+        private IMailService _mailService;
+        public SubCommentController(ILogger<SubCommentController> logger, IMailService mailService)
         {
             _logger = logger;
+            _mailService = mailService;
         }
 
         [HttpGet("{commentId}/subcomment")]
@@ -24,8 +27,6 @@ namespace CommentAPI.Controllers
         {
             try
             {
-                throw new Exception("Exception sample");    // only for testing the catch statement
-
                 var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
                 if (comment == null)
                 {
@@ -215,6 +216,10 @@ namespace CommentAPI.Controllers
             }
 
             comment.SubComments.Remove(subCommentFromStore);
+
+            _mailService.Send("SubComment deleted",
+                $"SubComment of id {subCommentFromStore.Id} is deleted.");
+
             return NoContent();
         }
     }
