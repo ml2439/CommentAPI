@@ -1,4 +1,5 @@
 ﻿using CommentAPI.Entities;
+using CommentAPI.Extensions;
 using CommentAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -55,7 +56,8 @@ namespace CommentAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+            CommentInfoContext commentInfoContext)
         {
             // The logger is a built-in service in ASP.NET Core, so don't need to add it to the container in ConfigureServices
             //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
@@ -66,6 +68,8 @@ namespace CommentAPI
             loggerFactory.AddNLog();
             // Add NLog.Web
             app.AddNLogWeb();
+
+            commentInfoContext.EnsureSeedDataForContext();
 
             // Without this line, 404 message only appears in DeveloperTool-Console
             app.UseStatusCodePages();
