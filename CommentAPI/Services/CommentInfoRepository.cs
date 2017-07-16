@@ -15,6 +15,12 @@ namespace CommentAPI.Services
             _context = context;
         }
 
+        public void AddSubComment(int commentId, SubComment subComment)
+        {
+            var comment = GetComment(commentId, false);
+            comment.SubComments.Add(subComment);
+        }
+
         public bool CommentExists(int commentId)
         {
             return _context.Comments.Any(c => c.Id == commentId);
@@ -44,6 +50,11 @@ namespace CommentAPI.Services
         public IEnumerable<SubComment> GetSubCommentsForComment(int commentId)
         {
             return _context.SubComments.Where(s => s.CommentId == commentId).ToList();
+        }
+
+        public bool Save()
+        {
+            return (_context.SaveChanges() >= 0);
         }
     }
 }

@@ -13,6 +13,7 @@ namespace CommentAPI.Services
         Comment GetComment(int commentId, bool includeSubComments);
         IEnumerable<SubComment> GetSubCommentsForComment(int commentId);
         SubComment GetSubCommentForComment(int commentId, int subCommentId);
-
+        void AddSubComment(int commentId, SubComment subComment);
+        bool Save();
     }
 }
