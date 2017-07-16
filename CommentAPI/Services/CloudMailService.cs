@@ -8,8 +8,8 @@ namespace CommentAPI.Services
 {
     public class CloudMailService : IMailService
     {
-        private string _mailTo = "testto@example.com";
-        private string _mailFrom = "testfrom@example.com";
+        private string _mailTo = Startup.Configuration["mailSettings:mailToAddress"];
+        private string _mailFrom = Startup.Configuration["mailSettings:mailFromAddress"];
 
         public void Send(string subject, string message)
         {

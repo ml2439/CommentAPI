@@ -12,6 +12,9 @@ namespace CommentAPI
 {
     public class Startup
     {
+        // public IConfigurationRoot Configuration { get; }
+        public static IConfigurationRoot Configuration;     // to use it in services
+
         public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
@@ -21,8 +24,6 @@ namespace CommentAPI
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
         }
-
-        public IConfigurationRoot Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
