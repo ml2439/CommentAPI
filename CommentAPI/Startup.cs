@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using NLog.Web;
 
 namespace CommentAPI
 {
@@ -45,8 +47,14 @@ namespace CommentAPI
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
             // The logger is a built-in service in ASP.NET Core, so don't need to add it to the container in ConfigureServices
-            loggerFactory.AddConsole(Configuration.GetSection("Logging"));
-            loggerFactory.AddDebug();
+            //loggerFactory.AddConsole(Configuration.GetSection("Logging"));
+            //loggerFactory.AddDebug();
+
+            // Add third-party logger https://github.com/NLog/NLog.Web/wiki/Getting-started-with-ASP.NET-Core-(csproj---vs2017)
+            // Add NLog to ASP.NET Core
+            loggerFactory.AddNLog();
+            // Add NLog.Web
+            app.AddNLogWeb();
 
             // Without this line, 404 message only appears in DeveloperTool-Console
             app.UseStatusCodePages();
