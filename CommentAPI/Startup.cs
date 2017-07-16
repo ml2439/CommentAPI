@@ -53,6 +53,8 @@ namespace CommentAPI
 #endif
             var connectionString = @"Server=(localdb)\mssqllocaldb;Database=CommentInfoDB;Trusted_Connection=True;";
             services.AddDbContext<CommentInfoContext>(o => o.UseSqlServer(connectionString));
+
+            services.AddScoped<ICommentInfoRepository, CommentInfoRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
