@@ -179,6 +179,24 @@ namespace CommentAPI.Controllers
             return NoContent();
         }
 
+        [HttpDelete("{commentId}/subcomment/{subCommentId}")]
+        public IActionResult DeleteSubComment(int commentId, int subCommentId)
+        {
+            // check uri to make sure commentId exist (resource uri)
+            var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
+            if (comment == null)
+            {
+                return NotFound();
+            }
 
+            var subCommentFromStore = comment.SubComments.FirstOrDefault(sbfs => sbfs.Id == subCommentId);
+            if (subCommentFromStore == null)
+            {
+                return NotFound();
+            }
+
+            comment.SubComments.Remove(subCommentFromStore);
+            return NoContent();
+        }
     }
 }
