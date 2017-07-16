@@ -1,4 +1,5 @@
-﻿using CommentAPI.Models;
+﻿using AutoMapper;
+using CommentAPI.Models;
 using CommentAPI.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
@@ -21,16 +22,7 @@ namespace CommentAPI.Controllers
             //return Ok(CommentDataStore.Current.Comments);
             var commentEntities = _commentInfoRepository.GetComments();
 
-            var results = new List<CommentWithoutSubDto>();
-
-            foreach (var ce in commentEntities)
-            {
-                results.Add(new CommentWithoutSubDto()
-                {
-                    Id = ce.Id,
-                    Content = ce.Content
-                });
-            }
+            var results = Mapper.Map<IEnumerable<CommentWithoutSubDto>>(commentEntities);
 
             return Ok(results);
         }
@@ -46,40 +38,12 @@ namespace CommentAPI.Controllers
 
             if (includeSubComments)
             {
-                var commentResult = new CommentDto()
-                {
-                    Id = comment.Id,
-                    Content = comment.Content
-                };
-
-                foreach(var sc in comment.SubComments)
-                {
-                    commentResult.SubComments.Add(
-                        new SubCommentDto()
-                        {
-                            Id = sc.Id,
-                            Content = sc.Content
-                        });
-                }
-
+                var commentResult = Mapper.Map<CommentDto>(comment);
                 return Ok(commentResult);
             }
 
-            var commentWithoutSubResult = new CommentWithoutSubDto()
-            {
-                Id = comment.Id,
-                Content = comment.Content
-            };
-
+            var commentWithoutSubResult = Mapper.Map<CommentWithoutSubDto>(comment);
             return Ok(commentWithoutSubResult);
-
-            //var comment = CommentDataStore.Current.Comments?.FirstOrDefault(c => c.Id == id);
-            //if (comment == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //return Ok(comment);
         }
     }
 }

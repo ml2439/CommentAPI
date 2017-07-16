@@ -1,5 +1,6 @@
 ﻿using CommentAPI.Entities;
 using CommentAPI.Extensions;
+using CommentAPI.Models;
 using CommentAPI.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -75,6 +76,13 @@ namespace CommentAPI
 
             // Without this line, 404 message only appears in DeveloperTool-Console
             app.UseStatusCodePages();
+
+            AutoMapper.Mapper.Initialize(cfg =>
+            {
+                cfg.CreateMap<Comment, CommentWithoutSubDto>();
+                cfg.CreateMap<Comment, CommentDto>();
+                cfg.CreateMap<SubComment, SubCommentDto>();
+            });
 
             app.UseMvc();
         }

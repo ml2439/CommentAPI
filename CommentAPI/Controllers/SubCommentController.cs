@@ -1,4 +1,5 @@
-﻿using CommentAPI.Models;
+﻿using AutoMapper;
+using CommentAPI.Models;
 using CommentAPI.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -32,8 +33,6 @@ namespace CommentAPI.Controllers
         {
             try
             {
-                //var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
-
                 if (!_commentInfoRepository.CommentExists(commentId))
                 {
                     _logger.LogInformation($"Comment with id {commentId} wasn't found when accessing subcomments.");
@@ -42,23 +41,9 @@ namespace CommentAPI.Controllers
 
                 var subCommentsForComment = _commentInfoRepository.GetSubCommentsForComment(commentId);
 
-                var subCommentsForCommentResults = new List<SubCommentDto>();
-                foreach (var sc in subCommentsForComment)
-                {
-                    subCommentsForCommentResults.Add(new SubCommentDto()
-                    {
-                        Id = sc.Id,
-                        Content = sc.Content
-                    });
-                }
+                var subCommentsForCommentResults = Mapper.Map<IEnumerable<SubCommentDto>>(subCommentsForComment);
 
                 return Ok(subCommentsForCommentResults);
-                //if (comment == null)
-                //{
-                //    _logger.LogInformation($"Comment with id {commentId} was not found when accessing sub-comments.");
-                //    return NotFound();
-                //}
-                //return Ok(comment.SubComments);
             }
             catch (Exception ex)
             {
@@ -81,26 +66,9 @@ namespace CommentAPI.Controllers
                 return NotFound();
             }
 
-            var subCommentResult = new SubCommentDto()
-            {
-                Id = subComment.Id,
-                Content = subComment.Content
-            };
+            var subCommentResult = Mapper.Map<SubCommentDto>(subComment);
 
             return Ok(subCommentResult);
-
-            //var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
-            //if (comment == null)
-            //{
-            //    return NotFound();
-            //}
-            //var subComment = comment.SubComments.FirstOrDefault(sc => sc.Id == subCommentId);
-            //if (subComment == null)
-            //{
-            //    return NotFound();
-            //}
-
-            //return Ok(subComment);
         }
 
         [HttpPost("{commentId}/subcomment")]
