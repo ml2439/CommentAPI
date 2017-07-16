@@ -16,10 +16,15 @@ namespace CommentAPI.Controllers
         // Constructor injection
         private ILogger<SubCommentController> _logger;
         private IMailService _mailService;
-        public SubCommentController(ILogger<SubCommentController> logger, IMailService mailService)
+        private ICommentInfoRepository _commentInfoRepository;
+
+        public SubCommentController(ILogger<SubCommentController> logger,
+            IMailService mailService,
+            ICommentInfoRepository commentInfoRepository)
         {
             _logger = logger;
             _mailService = mailService;
+            _commentInfoRepository = commentInfoRepository;
         }
 
         [HttpGet("{commentId}/subcomment")]
@@ -27,13 +32,33 @@ namespace CommentAPI.Controllers
         {
             try
             {
-                var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
-                if (comment == null)
+                //var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
+
+                if (!_commentInfoRepository.CommentExists(commentId))
                 {
-                    _logger.LogInformation($"Comment with id {commentId} was not found when accessing sub-comments.");
+                    _logger.LogInformation($"Comment with id {commentId} wasn't found when accessing subcomments.");
                     return NotFound();
                 }
-                return Ok(comment.SubComments);
+
+                var subCommentsForComment = _commentInfoRepository.GetSubCommentsForComment(commentId);
+
+                var subCommentsForCommentResults = new List<SubCommentDto>();
+                foreach (var sc in subCommentsForComment)
+                {
+                    subCommentsForCommentResults.Add(new SubCommentDto()
+                    {
+                        Id = sc.Id,
+                        Content = sc.Content
+                    });
+                }
+
+                return Ok(subCommentsForCommentResults);
+                //if (comment == null)
+                //{
+                //    _logger.LogInformation($"Comment with id {commentId} was not found when accessing sub-comments.");
+                //    return NotFound();
+                //}
+                //return Ok(comment.SubComments);
             }
             catch (Exception ex)
             {
@@ -45,18 +70,37 @@ namespace CommentAPI.Controllers
         [HttpGet("{commentId}/subcomment/{subCommentId}", Name = "GetSubComment")]
         public IActionResult GetSubComment(int commentId, int subCommentId)
         {
-            var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
-            if (comment == null)
+            if (!_commentInfoRepository.CommentExists(commentId))
             {
                 return NotFound();
             }
-            var subComment = comment.SubComments.FirstOrDefault(sc => sc.Id == subCommentId);
+
+            var subComment = _commentInfoRepository.GetSubCommentForComment(commentId, subCommentId);
             if (subComment == null)
             {
                 return NotFound();
             }
 
-            return Ok(subComment);
+            var subCommentResult = new SubCommentDto()
+            {
+                Id = subComment.Id,
+                Content = subComment.Content
+            };
+
+            return Ok(subCommentResult);
+
+            //var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
+            //if (comment == null)
+            //{
+            //    return NotFound();
+            //}
+            //var subComment = comment.SubComments.FirstOrDefault(sc => sc.Id == subCommentId);
+            //if (subComment == null)
+            //{
+            //    return NotFound();
+            //}
+
+            //return Ok(subComment);
         }
 
         [HttpPost("{commentId}/subcomment")]

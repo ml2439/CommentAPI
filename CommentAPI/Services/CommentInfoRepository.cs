@@ -15,6 +15,11 @@ namespace CommentAPI.Services
             _context = context;
         }
 
+        public bool CommentExists(int commentId)
+        {
+            return _context.Comments.Any(c => c.Id == commentId);
+        }
+
         public Comment GetComment(int commentId, bool includeSubComments)
         {
             if (includeSubComments)
@@ -36,7 +41,7 @@ namespace CommentAPI.Services
             return _context.SubComments.Where(s => s.CommentId == commentId && s.Id == subCommentId).FirstOrDefault();
         }
 
-        public IEnumerable<SubComment> GetSubComments(int commentId)
+        public IEnumerable<SubComment> GetSubCommentsForComment(int commentId)
         {
             return _context.SubComments.Where(s => s.CommentId == commentId).ToList();
         }

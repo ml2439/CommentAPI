@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace CommentAPI.Services
 {
-    interface ICommentInfoRepository
+    public interface ICommentInfoRepository
     {
+        bool CommentExists(int commentId);
         IEnumerable<Comment> GetComments();
         Comment GetComment(int commentId, bool includeSubComments);
-        IEnumerable<SubComment> GetSubComments(int commentId);
+        IEnumerable<SubComment> GetSubCommentsForComment(int commentId);
         SubComment GetSubCommentForComment(int commentId, int subCommentId);
 
     }
