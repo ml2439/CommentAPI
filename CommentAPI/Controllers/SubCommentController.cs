@@ -1,6 +1,7 @@
 ﻿using CommentAPI.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,15 +12,33 @@ namespace CommentAPI.Controllers
     [Route("api/comment")]
     public class SubCommentController : Controller
     {
+        // Constructor injection
+        private ILogger<SubCommentController> _logger;
+        public SubCommentController(ILogger<SubCommentController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpGet("{commentId}/subcomment")]
         public IActionResult GetSubComments(int commentId)
         {
-            var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
-            if (comment == null)
+            try
             {
-                return NotFound();
+                throw new Exception("Exception sample");    // only for testing the catch statement
+
+                var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
+                if (comment == null)
+                {
+                    _logger.LogInformation($"Comment with id {commentId} was not found when accessing sub-comments.");
+                    return NotFound();
+                }
+                return Ok(comment.SubComments);
             }
-            return Ok(comment.SubComments);
+            catch (Exception ex)
+            {
+                _logger.LogCritical($"Exception while getting subcomments of comment with id {commentId}.", ex);
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
         }
 
         [HttpGet("{commentId}/subcomment/{subCommentId}", Name = "GetSubComment")]
