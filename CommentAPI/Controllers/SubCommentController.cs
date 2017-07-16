@@ -1,4 +1,5 @@
 ﻿using CommentAPI.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -47,6 +48,7 @@ namespace CommentAPI.Controllers
                 return BadRequest();
             }
 
+            // check input validation
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
@@ -76,7 +78,7 @@ namespace CommentAPI.Controllers
         }
 
         [HttpPut("{commentId}/subcomment/{subCommentId}")]
-        public IActionResult UpdateSubComment(int commentId, int subCommentId, 
+        public IActionResult UpdateSubComment(int commentId, int subCommentId,
             [FromBody] SubCommentForUpdateDto subComment)
         {
             // check user input (request body)
@@ -107,6 +109,76 @@ namespace CommentAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpPatch("{commentId}/subcomment/{subCommentId}")]
+        public IActionResult PartiallyUpdateSubComment(int commentId, int subCommentId,
+            [FromBody] JsonPatchDocument<SubCommentForUpdateDto> patchDoc)
+        {
+            // check user input (request body)
+            // PATCH request body must be an array of object(s)
+            // Example: 
+            /*
+            [
+	            {
+		            "op": "replace",
+		            "path": "/content",
+		            "value":"a new content"
+
+                },
+	            {
+		            "op": "replace",
+		            "path": "/content",
+		            "value":"another new content"
+	            },
+	            {
+		            "op": "replace",
+		            "path": "/nonexistcontent",
+		            "value":"this should not be a valid patch"
+	            }
+            ]
+            */
+            if (patchDoc == null)
+            {
+                return BadRequest();
+            }
+
+            // check uri to make sure commentId exist (resource uri)
+            var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            var subCommentFromStore = comment.SubComments.FirstOrDefault(sbfs => sbfs.Id == subCommentId);
+            if (subCommentFromStore == null)
+            {
+                return NotFound();
+            }
+
+            var subCommentToPatch = new SubCommentForUpdateDto()
+            {
+                Content = subCommentFromStore.Content
+            };
+
+            // ModelState helps check input validation
+            patchDoc.ApplyTo(subCommentToPatch, ModelState);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Validate the patchdoc, make sure content value can't be null
+            TryValidateModel(subCommentToPatch);
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            subCommentFromStore.Content = subCommentToPatch.Content;
+
+            return NoContent();
+        }
+
 
     }
 }
