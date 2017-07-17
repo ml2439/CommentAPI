@@ -84,6 +84,7 @@ namespace CommentAPI
                 cfg.CreateMap<SubComment, SubCommentDto>();
                 cfg.CreateMap<SubCommentForCreationDto, SubComment>();
                 cfg.CreateMap<SubCommentForUpdateDto, SubComment>();
+                cfg.CreateMap<SubComment, SubCommentForUpdateDto>();
             });
 
             app.UseMvc();

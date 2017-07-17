@@ -14,6 +14,7 @@ namespace CommentAPI.Services
         IEnumerable<SubComment> GetSubCommentsForComment(int commentId);
         SubComment GetSubCommentForComment(int commentId, int subCommentId);
         void AddSubComment(int commentId, SubComment subComment);
+        void DeleteSubComment(SubComment subComment);
         bool Save();
     }
 }

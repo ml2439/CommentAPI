@@ -177,23 +177,18 @@ namespace CommentAPI.Controllers
                 return BadRequest();
             }
 
-            // check uri to make sure commentId exist (resource uri)
-            var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
-            if (comment == null)
+            if (!_commentInfoRepository.CommentExists(commentId))
             {
                 return NotFound();
             }
 
-            var subCommentFromStore = comment.SubComments.FirstOrDefault(sbfs => sbfs.Id == subCommentId);
-            if (subCommentFromStore == null)
+            var subCommentEntity = _commentInfoRepository.GetSubCommentForComment(commentId, subCommentId);
+            if (subCommentEntity == null)
             {
                 return NotFound();
             }
 
-            var subCommentToPatch = new SubCommentForUpdateDto()
-            {
-                Content = subCommentFromStore.Content
-            };
+            var subCommentToPatch = Mapper.Map<SubCommentForUpdateDto>(subCommentEntity);
 
             // ModelState helps check input validation
             patchDoc.ApplyTo(subCommentToPatch, ModelState);
@@ -209,7 +204,12 @@ namespace CommentAPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            subCommentFromStore.Content = subCommentToPatch.Content;
+            Mapper.Map(subCommentToPatch, subCommentEntity);
+
+            if (!_commentInfoRepository.Save())
+            {
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
 
             return NoContent();
         }
@@ -217,23 +217,27 @@ namespace CommentAPI.Controllers
         [HttpDelete("{commentId}/subcomment/{subCommentId}")]
         public IActionResult DeleteSubComment(int commentId, int subCommentId)
         {
-            // check uri to make sure commentId exist (resource uri)
-            var comment = CommentDataStore.Current.Comments.FirstOrDefault(c => c.Id == commentId);
-            if (comment == null)
+            if (!_commentInfoRepository.CommentExists(commentId))
             {
                 return NotFound();
             }
 
-            var subCommentFromStore = comment.SubComments.FirstOrDefault(sbfs => sbfs.Id == subCommentId);
-            if (subCommentFromStore == null)
+            var subCommentEntity = _commentInfoRepository.GetSubCommentForComment(commentId, subCommentId);
+            if (subCommentEntity == null)
             {
                 return NotFound();
             }
 
-            comment.SubComments.Remove(subCommentFromStore);
+            _commentInfoRepository.DeleteSubComment(subCommentEntity);
+
+            if (!_commentInfoRepository.Save())
+            {
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
+
 
             _mailService.Send("SubComment deleted",
-                $"SubComment of id {subCommentFromStore.Id} is deleted.");
+                $"SubComment of id {subCommentEntity.Id} is deleted.");
 
             return NoContent();
         }

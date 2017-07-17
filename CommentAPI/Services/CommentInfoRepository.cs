@@ -52,6 +52,11 @@ namespace CommentAPI.Services
             return _context.SubComments.Where(s => s.CommentId == commentId).ToList();
         }
 
+        public void DeleteSubComment(SubComment subComment)
+        {
+            _context.SubComments.Remove(subComment);
+        }
+
         public bool Save()
         {
             return (_context.SaveChanges() >= 0);
